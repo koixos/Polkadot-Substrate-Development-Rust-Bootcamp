@@ -102,16 +102,26 @@ fn to_letter_grade(num: u8) -> &'static str {
 }
 
 enum LogLevel {
-    Warning,
-    Info,
-    Error
+    Warning { msg: String },
+    Info { msg: String },
+    Error { msg: String },
 }
 
-fn log(level: LogLevel, msg: &str) -> String {
+impl LogLevel {
+    fn call(&self) {
+        match self {
+            LogLevel::Error { msg } => println!("ERROR: {}", msg),
+            LogLevel::Info { msg } => println!("INFO: {}", msg),
+            LogLevel::Warning { msg } => println!("WARNING: {}", msg),
+        }
+    }
+}
+
+fn log(level: LogLevel) -> String {
     match level {
-        LogLevel::Warning => format!("[WARN]: {}", msg),
-        LogLevel::Info => format!("[INFO]: {}", msg),
-        LogLevel::Error => format!("[ERROR]: {}", msg)
+        LogLevel::Warning { msg } => format!("[WARN]: {}", msg),
+        LogLevel::Info { msg } => format!("[INFO]: {}", msg),
+        LogLevel::Error { msg } => format!("[ERROR]: {}", msg)
     }
 }
 
@@ -196,7 +206,7 @@ fn main() {
 
     println!("Harf notu: {}", to_letter_grade(78));
 
-    println!("{}", log(LogLevel::Error, "test"));
+    println!("{}", log(LogLevel::Error { msg: "test".to_string() }));
 
     let person = PersonInfo {
         Name: String::from("Talha Kaymak"),
@@ -234,7 +244,36 @@ fn main() {
         _ => "_",
     };
     println!("Result is {}", result);
-    
+
+    let my_book = create_book(
+        "kitabim".to_string(),
+        "zeynep gurbuz".to_string(),
+        2020
+    );
+
+    println!("\nad: {}, yazar: {}, sene: {}", my_book.title, my_book.author, my_book.publication_year);
+    println!("{:?}", my_book);
+
+    let tuple_book = Tuple_Book(
+        "kitabi".to_string(),
+        "talha xsxs".to_string(),
+        1123
+    );
+
+    let title = tuple_book.0;
+
+    println!("{title}");
+
+    let unit_book = Unit_Book; //empty book
+
+    let my_rect = Rectangle {
+        width: 10.0,
+        height: 20.0,
+    };
+
+    let area = my_rect.area();
+
+    println!("area: {area}");
 }
 
 /*  result easy syntax
@@ -270,3 +309,35 @@ fn main() {
     }
 }
 */
+
+#[derive(Debug)]
+struct Book {
+    title: String,
+    author: String,
+    publication_year: u32,
+}
+
+struct Tuple_Book(String, String, u32);
+
+struct Unit_Book;
+
+fn create_book(title: String, author: String, publication_year: u32) -> Book {
+    let book = Book {
+        title, // title = title, shortcut
+        author,
+        publication_year,
+    };
+
+    book
+}
+
+struct Rectangle {
+    width: f64,
+    height: f64,
+}
+
+impl Rectangle {
+    fn area(&self) -> f64 {
+        self.width * self.height
+    }
+}
